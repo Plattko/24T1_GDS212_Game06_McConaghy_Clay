@@ -316,11 +316,11 @@ MonoBehaviour:
   coyoteTime: 0.15
   gravityScale: 1
   gravityFallMultiplier: 1.9
-  wallSlideSpeed: 4
+  wallSlideSpeed: 5
   wallJumpPower: {x: 8, y: 8}
   wallJumpCoyoteTime: 0.15
   wallJumpTime: 0.75
-  wallJumpMoveLerp: 0.2
+  wallJumpMoveLerp: 0.5
 --- !u!95 &345716562
 Animator:
   serializedVersion: 5
