@@ -8,6 +8,7 @@ namespace Plattko
     public class PlayerController : MonoBehaviour
     {
         private Rigidbody2D rb;
+        private Transform sprite;
         private Transform groundCheck;
 
         // Collision check variables
@@ -51,6 +52,7 @@ namespace Plattko
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
+            sprite = transform.GetChild(0).gameObject.GetComponent<Transform>();
             groundCheck = transform.GetChild(1).gameObject.GetComponent<Transform>();
 
             groundLayerMask = 1 << groundLayer;
@@ -126,6 +128,8 @@ namespace Plattko
             }
 
             WallSlide();
+
+            Flip();
         }
 
         // ---------------------------------
@@ -200,6 +204,14 @@ namespace Plattko
 
             rb.velocity = new Vector2(rb.velocity.x, 0f);
             rb.AddForce(new Vector2(wallJumpPower.x * wallJumpDirection, wallJumpPower.y), ForceMode2D.Impulse);
+        }
+
+        private void Flip()
+        {
+            if (moveInput != 0 && Mathf.Sign(moveInput) != Mathf.Sign(sprite.localScale.x))
+            {
+                sprite.localScale = new Vector3(-sprite.localScale.x, sprite.localScale.y, sprite.localScale.z);
+            }
         }
 
         // ---------------------------------
