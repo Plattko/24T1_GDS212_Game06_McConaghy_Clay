@@ -10,6 +10,7 @@ namespace Plattko
         private Rigidbody2D rb;
         private Transform sprite;
         private Transform groundCheck;
+        private Animator animator;
 
         // Collision check variables
         private int groundLayer = 6;
@@ -54,6 +55,7 @@ namespace Plattko
             rb = GetComponent<Rigidbody2D>();
             sprite = transform.GetChild(0).gameObject.GetComponent<Transform>();
             groundCheck = transform.GetChild(1).gameObject.GetComponent<Transform>();
+            animator = GetComponent<Animator>();
 
             groundLayerMask = 1 << groundLayer;
             wallLayerMask = 1 << wallLayer;
@@ -130,6 +132,8 @@ namespace Plattko
             WallSlide();
 
             Flip();
+
+            UpdateAnimationParameters();
         }
 
         // ---------------------------------
@@ -206,11 +210,33 @@ namespace Plattko
             rb.AddForce(new Vector2(wallJumpPower.x * wallJumpDirection, wallJumpPower.y), ForceMode2D.Impulse);
         }
 
+        // ---------------------------------
+        // SPRITE AND ANIMATIONS
+        // ---------------------------------
         private void Flip()
         {
             if (moveInput != 0 && Mathf.Sign(moveInput) != Mathf.Sign(sprite.localScale.x))
             {
                 sprite.localScale = new Vector3(-sprite.localScale.x, sprite.localScale.y, sprite.localScale.z);
+            }
+        }
+
+        private void UpdateAnimationParameters()
+        {
+            animator.SetBool("isGrounded", IsGrounded());
+            animator.SetFloat("horizontalVelocity", Mathf.Abs(moveInput));
+
+            if (rb.velocity.y < -1f)
+            {
+                animator.SetFloat("verticalVelocity", -1f);
+            }
+            else if (rb.velocity.y > -1f && rb.velocity.y < 1f)
+            {
+                animator.SetFloat("verticalVelocity", 0f);
+            }
+            else if (rb.velocity.y > 1f)
+            {
+                animator.SetFloat("verticalVelocity", 1f);
             }
         }
 
