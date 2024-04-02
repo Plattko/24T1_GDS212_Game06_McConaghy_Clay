@@ -153,8 +153,8 @@ namespace Plattko
 
         private bool IsWalled()
         {
-            wallCollider = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(1.0f, 0.8f), 0f, wallLayerMask);
-            if (wallCollider != null)
+            wallCollider = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(1.0f, 0.4f), 0f, wallLayerMask); // Vector2 formerly 1.0f, 0.8f
+            if (wallCollider != null && !IsGrounded())
             {
                 return wallCollider;
             }
@@ -190,7 +190,7 @@ namespace Plattko
 
         private void WallSlide()
         {
-            if (IsWalled() && !IsGrounded())
+            if (IsWalled())
             {
                 isWallSliding = true;
                 rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlideSpeed, float.MaxValue));
@@ -225,6 +225,7 @@ namespace Plattko
         {
             animator.SetBool("isGrounded", IsGrounded());
             animator.SetFloat("horizontalVelocity", Mathf.Abs(moveInput));
+            animator.SetBool("isWalled", IsWalled());
 
             if (rb.velocity.y < -1f)
             {
