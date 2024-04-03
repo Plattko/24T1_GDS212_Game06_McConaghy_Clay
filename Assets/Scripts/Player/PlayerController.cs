@@ -10,13 +10,15 @@ namespace Plattko
         private Rigidbody2D rb;
         private Transform sprite;
         private Transform groundCheck;
+        private Transform ledgeCheck;
         private Animator animator;
+        private BoxCollider2D boxCollider;
 
         // Collision check variables
         private int groundLayer = 6;
         private int wallLayer = 7;
         private LayerMask groundLayerMask;
-        private LayerMask wallLayerMask;
+        [HideInInspector] public LayerMask wallLayerMask;
         private Collider2D wallCollider;
 
         [Header("Movement Variables")]
@@ -26,6 +28,8 @@ namespace Plattko
         [SerializeField] private float deceleration = 7f;
         [SerializeField] private float velPower = 0.9f;
         [SerializeField] private float friction = 0.25f;
+
+        private bool canFlip = true;
 
         [Header("Jump Variables")]
         [SerializeField] private float jumpPower = 8f;
@@ -50,12 +54,26 @@ namespace Plattko
         private int wallJumpDirection;
         private bool isWallJumping = false;
 
+        [Header("Mantle Variables")]
+        [SerializeField] private Vector2 startOffset;
+        [SerializeField] private Vector2 endOffset;
+
+        private Vector2 mantleStartPosition;
+        private Vector2 mantleEndPosition;
+
+        private bool canCheckLedge = true;
+        private bool canMantle = false;
+
+        [HideInInspector] public bool isLedgeDetected;
+
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
             sprite = transform.GetChild(0).gameObject.GetComponent<Transform>();
             groundCheck = transform.GetChild(1).gameObject.GetComponent<Transform>();
+            ledgeCheck = transform.GetChild(2).gameObject.GetComponent<Transform>();
             animator = GetComponent<Animator>();
+            boxCollider = GetComponent<BoxCollider2D>();
 
             groundLayerMask = 1 << groundLayer;
             wallLayerMask = 1 << wallLayer;
@@ -77,11 +95,11 @@ namespace Plattko
                 wallJumpCoyoteTimeCounter = wallJumpCoyoteTime;
 
                 // Set the wall-jump direction
-                if (wallCollider.transform.position.x < transform.position.x)
+                if (wallCollider != null && wallCollider.transform.position.x < transform.position.x)
                 {
                     wallJumpDirection = 1;
                 }
-                else if (wallCollider.transform.position.x > transform.position.x)
+                else if (wallCollider != null && wallCollider.transform.position.x > transform.position.x)
                 {
                     wallJumpDirection = -1;
                 }
@@ -95,6 +113,9 @@ namespace Plattko
             {
                 isWallJumping = false;
             }
+
+            Debug.Log("Ledge detected:" + isLedgeDetected);
+            Debug.Log(wallCollider);
         }
 
         private void FixedUpdate()
@@ -131,6 +152,8 @@ namespace Plattko
 
             WallSlide();
 
+            Mantle();
+
             Flip();
 
             UpdateAnimationParameters();
@@ -144,16 +167,17 @@ namespace Plattko
             Collider2D collider = Physics2D.OverlapBox(new Vector2(groundCheck.position.x, groundCheck.position.y), new Vector2(0.8f, 0.2f), 0f, groundLayerMask);
             if (Mathf.Abs(rb.velocity.y) <= 0.01f  && collider != null)
             {
-                Debug.Log("Grounded = true");
                 return true;
             }
-            Debug.Log("Grounded = false");
             return false;
         }
 
-        private bool IsWalled()
+        public bool IsWalled()
         {
-            wallCollider = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(1.0f, 0.4f), 0f, wallLayerMask); // Vector2 formerly 1.0f, 0.8f
+            //wallCollider = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(1.0f, 0.4f), 0f, wallLayerMask); // Vector2 formerly 1.0f, 0.8f
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(ledgeCheck.localScale.x) * transform.right, 0.6f, wallLayerMask);
+            wallCollider = hit.collider;
+
             if (wallCollider != null && !IsGrounded())
             {
                 return wallCollider;
@@ -190,7 +214,7 @@ namespace Plattko
 
         private void WallSlide()
         {
-            if (IsWalled())
+            if (IsWalled() && !canMantle)
             {
                 isWallSliding = true;
                 rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlideSpeed, float.MaxValue));
@@ -210,14 +234,84 @@ namespace Plattko
             rb.AddForce(new Vector2(wallJumpPower.x * wallJumpDirection, wallJumpPower.y), ForceMode2D.Impulse);
         }
 
+        private void Mantle()
+        {
+            //if (isLedgeDetected && canCheckLedge)
+            //{
+            //    canCheckLedge = false;
+
+            //    Vector2 ledgePosition = ledgeCheck.transform.position;
+            //    mantleStartPosition = ledgePosition + startOffset;
+            //    mantleEndPosition = ledgePosition + endOffset;
+
+            //    boxCollider.enabled = false;
+            //    canMantle = true;
+            //}
+
+            //if (canMantle)
+            //{
+            //    transform.position = mantleStartPosition;
+            //}
+
+            if (isLedgeDetected && canCheckLedge)
+            {
+                canCheckLedge = false;
+
+                float ledgeSide;
+                float ledgeTop = wallCollider.bounds.max.y;
+
+                if (ledgeCheck.localScale.x > 0)
+                {
+                    ledgeSide = wallCollider.bounds.min.x;
+                    mantleStartPosition = new Vector2(ledgeSide + startOffset.x, ledgeTop + startOffset.y);
+                    mantleEndPosition = new Vector2(ledgeSide + endOffset.x, ledgeTop + endOffset.y);
+                }
+                else if (ledgeCheck.localScale.x < 0)
+                {
+                    ledgeSide = wallCollider.bounds.max.x;
+                    mantleStartPosition = new Vector2(ledgeSide - startOffset.x, ledgeTop + startOffset.y);
+                    mantleEndPosition = new Vector2(ledgeSide - endOffset.x, ledgeTop + endOffset.y);
+                }
+
+                // Disable player move
+                canFlip = false;
+                rb.simulated = false;
+                canMantle = true;
+            }
+
+            if (canMantle)
+            {
+                transform.position = mantleStartPosition;
+            }
+        }
+
+        public void FinishMantle()
+        {
+            canMantle = false;
+            transform.position = mantleEndPosition;
+
+            // Restore player move
+            canFlip = true;
+            rb.velocity = Vector2.zero;
+            rb.simulated = true;
+            Invoke("AllowLedgeCheck", 0.1f);
+        }
+
+        private void AllowLedgeCheck()
+        {
+            canCheckLedge = true;
+        }
+
         // ---------------------------------
         // SPRITE AND ANIMATIONS
         // ---------------------------------
         private void Flip()
         {
-            if (moveInput != 0 && Mathf.Sign(moveInput) != Mathf.Sign(sprite.localScale.x))
+            if (moveInput != 0 && Mathf.Sign(moveInput) != Mathf.Sign(sprite.localScale.x) && canFlip)
             {
                 sprite.localScale = new Vector3(-sprite.localScale.x, sprite.localScale.y, sprite.localScale.z);
+                //ledgeCheck.transform.localPosition = new Vector2(-ledgeCheck.transform.localPosition.x, ledgeCheck.transform.localPosition.y);
+                ledgeCheck.transform.localScale = new Vector2(-ledgeCheck.transform.localScale.x, ledgeCheck.transform.localScale.y);
             }
         }
 
@@ -226,6 +320,7 @@ namespace Plattko
             animator.SetBool("isGrounded", IsGrounded());
             animator.SetFloat("horizontalVelocity", Mathf.Abs(moveInput));
             animator.SetBool("isWalled", IsWalled());
+            animator.SetBool("canMantle", canMantle);
 
             if (rb.velocity.y < -1f)
             {
