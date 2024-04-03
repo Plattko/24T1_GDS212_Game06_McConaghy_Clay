@@ -167,7 +167,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc9113c94a696da4a8a5c9736c839b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 0.1
   ledgeCheckDistance: 0.6
 --- !u!1 &345716555
 GameObject:
@@ -357,6 +356,7 @@ MonoBehaviour:
   wallLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  isLedgeDetected: 0
   moveSpeed: 10
   acceleration: 7
   deceleration: 7
@@ -373,7 +373,7 @@ MonoBehaviour:
   wallJumpMoveLerp: 0.5
   startOffset: {x: 0.083, y: -0.29}
   endOffset: {x: 0.5, y: 0.52}
-  isLedgeDetected: 0
+  damageBounceForce: 17
 --- !u!95 &345716562
 Animator:
   serializedVersion: 5
@@ -620,7 +620,7 @@ GameObject:
   - component: {fileID: 546603888}
   - component: {fileID: 546603887}
   - component: {fileID: 546603889}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Piano
   m_TagString: Untagged
   m_Icon: {fileID: 0}

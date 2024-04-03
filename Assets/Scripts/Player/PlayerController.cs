@@ -65,6 +65,11 @@ namespace Plattko
 
         private bool canMantle;
 
+        [Header("Damage Bounce Variables")]
+        [SerializeField] private float damageBounceForce = 25f;
+
+        private bool isInDamageBounce;
+
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -112,8 +117,8 @@ namespace Plattko
                 isWallJumping = false;
             }
 
-            Debug.Log("Ledge detected:" + isLedgeDetected);
-            Debug.Log(wallCollider);
+            //Debug.Log("Ledge detected:" + isLedgeDetected);
+            //Debug.Log(wallCollider);
         }
 
         private void FixedUpdate()
@@ -239,7 +244,7 @@ namespace Plattko
 
         private void Mantle()
         {
-            if (isLedgeDetected && canCheckLedge)
+            if (isLedgeDetected && canCheckLedge && !isInDamageBounce)
             {
                 canCheckLedge = false;
 
@@ -283,6 +288,27 @@ namespace Plattko
             Invoke("AllowLedgeCheck", 0.1f);
         }
 
+        private void DamageBounce()
+        {
+            float counterForce = rb.velocity.y;
+            rb.AddForce(Vector2.up * (damageBounceForce + counterForce), ForceMode2D.Impulse);
+            isInDamageBounce = true;
+        }
+
+        public void FinishDamageBounce()
+        {
+            isInDamageBounce = false;
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.gameObject.layer == 8)
+            {
+                Debug.Log("Hit piano.");
+                DamageBounce();
+            }
+        }
+
         // ---------------------------------
         // SPRITE AND ANIMATIONS
         // ---------------------------------
@@ -302,6 +328,7 @@ namespace Plattko
             animator.SetFloat("horizontalVelocity", Mathf.Abs(moveInput));
             animator.SetBool("isWalled", IsWalled());
             animator.SetBool("canMantle", canMantle);
+            animator.SetBool("isInDamageBounce", isInDamageBounce);
 
             if (rb.velocity.y < -1f)
             {
