@@ -12,7 +12,6 @@ namespace Plattko
         private Transform groundCheck;
         private Transform ledgeCheck;
         private Animator animator;
-        private BoxCollider2D boxCollider;
 
         // Collision check variables
         private int groundLayer = 6;
@@ -20,6 +19,9 @@ namespace Plattko
         private LayerMask groundLayerMask;
         [HideInInspector] public LayerMask wallLayerMask;
         private Collider2D wallCollider;
+
+        private bool canCheckLedge = true;
+        [HideInInspector] public bool isLedgeDetected;
 
         [Header("Movement Variables")]
         private float moveInput;
@@ -41,7 +43,7 @@ namespace Plattko
 
         [Header("Wall-Slide Variables")]
         [SerializeField] private float wallSlideSpeed = 4f;
-        private bool isWallSliding = false;
+        private bool isWallSliding;
 
         [Header("Wall-Jump Variables")]
         [SerializeField] private Vector2 wallJumpPower;
@@ -52,7 +54,7 @@ namespace Plattko
         private float wallJumpEndTime;
         [SerializeField] private float wallJumpMoveLerp = 0.2f;
         private int wallJumpDirection;
-        private bool isWallJumping = false;
+        private bool isWallJumping;
 
         [Header("Mantle Variables")]
         [SerializeField] private Vector2 startOffset;
@@ -61,10 +63,7 @@ namespace Plattko
         private Vector2 mantleStartPosition;
         private Vector2 mantleEndPosition;
 
-        private bool canCheckLedge = true;
-        private bool canMantle = false;
-
-        [HideInInspector] public bool isLedgeDetected;
+        private bool canMantle;
 
         void Start()
         {
@@ -73,7 +72,6 @@ namespace Plattko
             groundCheck = transform.GetChild(1).gameObject.GetComponent<Transform>();
             ledgeCheck = transform.GetChild(2).gameObject.GetComponent<Transform>();
             animator = GetComponent<Animator>();
-            boxCollider = GetComponent<BoxCollider2D>();
 
             groundLayerMask = 1 << groundLayer;
             wallLayerMask = 1 << wallLayer;
@@ -185,6 +183,11 @@ namespace Plattko
             return false;
         }
 
+        private void AllowLedgeCheck()
+        {
+            canCheckLedge = true;
+        }
+
         // ---------------------------------
         // MOVEMENT METHODS
         // ---------------------------------
@@ -236,23 +239,6 @@ namespace Plattko
 
         private void Mantle()
         {
-            //if (isLedgeDetected && canCheckLedge)
-            //{
-            //    canCheckLedge = false;
-
-            //    Vector2 ledgePosition = ledgeCheck.transform.position;
-            //    mantleStartPosition = ledgePosition + startOffset;
-            //    mantleEndPosition = ledgePosition + endOffset;
-
-            //    boxCollider.enabled = false;
-            //    canMantle = true;
-            //}
-
-            //if (canMantle)
-            //{
-            //    transform.position = mantleStartPosition;
-            //}
-
             if (isLedgeDetected && canCheckLedge)
             {
                 canCheckLedge = false;
@@ -295,11 +281,6 @@ namespace Plattko
             rb.velocity = Vector2.zero;
             rb.simulated = true;
             Invoke("AllowLedgeCheck", 0.1f);
-        }
-
-        private void AllowLedgeCheck()
-        {
-            canCheckLedge = true;
         }
 
         // ---------------------------------

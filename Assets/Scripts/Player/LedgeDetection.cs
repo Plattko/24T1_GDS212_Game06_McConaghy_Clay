@@ -8,7 +8,6 @@ namespace Plattko
     {
         private PlayerController playerController;
         
-        [SerializeField] private float radius = 0.1f;
         [SerializeField] private float ledgeCheckDistance = 0.6f;
         private bool isTouchingLedge = false;
 
@@ -24,7 +23,6 @@ namespace Plattko
 
         private void IsLedgeDetected()
         {
-            //isTouchingLedge = Physics2D.OverlapCircle(transform.position, radius, playerController.wallLayerMask);
             isTouchingLedge = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, ledgeCheckDistance, playerController.wallLayerMask);
 
             if (playerController.IsWalled() && !isTouchingLedge)
@@ -39,9 +37,7 @@ namespace Plattko
 
         private void OnDrawGizmos()
         {
-            //Gizmos.DrawWireSphere(transform.position, radius);
             Gizmos.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * ledgeCheckDistance);
-            //Gizmos.DrawWireCube(transform.parent.transform.position, new Vector2(1.0f, 0.4f));
             Gizmos.DrawRay(transform.parent.transform.position, Mathf.Sign(transform.localScale.x) * transform.right * ledgeCheckDistance);
         }
     }
