@@ -6,8 +6,9 @@ namespace Plattko
 {
     public class Note : MonoBehaviour
     {
-        private Rigidbody2D rb;
         private SpriteRenderer spriteRenderer;
+        private BoxCollider2D[] sideColliders;
+        private BoxCollider2D bottomCollider;
 
         [Header("Note Settings")]
         [SerializeField] private float destroyDelay;
@@ -15,9 +16,18 @@ namespace Plattko
 
         public void NoteSetup(float width, float height, Color colour, float fallSpeed)
         {
-            rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            sideColliders = transform.GetChild(1).GetComponents<BoxCollider2D>();
+            bottomCollider = transform.GetChild(2).GetComponent<BoxCollider2D>();
+
             transform.localScale = new Vector2(width, height);
+
+            foreach (BoxCollider2D collider in sideColliders)
+            {
+                collider.size = new Vector2(collider.size.x, collider.size.y - 0.1f);
+            }
+            bottomCollider.size = new Vector3(bottomCollider.size.x - 0.1f, bottomCollider.size.y);
+
             spriteRenderer.color = colour;
             //rb.velocity = new Vector2(0, -fallSpeed);
             this.fallSpeed = fallSpeed;

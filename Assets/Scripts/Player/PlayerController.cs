@@ -396,9 +396,9 @@ namespace Plattko
 
         private void OnDrawGizmos()
         {
-            Vector2 boxPos = new Vector2(transform.position.x + Mathf.Sign(ledgeCheck.localScale.x) * 1.08f, transform.position.y + 1.2f);
-            Vector2 boxSize = new Vector2(0.64f, 1.21f);
-            Gizmos.DrawCube(boxPos, boxSize);
+            //Vector2 boxPos = new Vector2(transform.position.x + Mathf.Sign(ledgeCheck.localScale.x) * 1.08f, transform.position.y + 1.2f);
+            //Vector2 boxSize = new Vector2(0.64f, 1.21f);
+            //Gizmos.DrawCube(boxPos, boxSize);
         }
     }
 }
