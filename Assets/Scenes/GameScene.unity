@@ -9624,7 +9624,7 @@ MonoBehaviour:
   - {fileID: 710125582}
   fileLocation: Plants vs Zombies - Loonboon.mid
   leftLaneDivider: 54
-  noteSpawnY: 18
+  noteSpawnY: 17.5
   whiteNoteWidth: 1.1
   blackNoteWidth: 0.7
   quarterNoteHeight: 1.1
