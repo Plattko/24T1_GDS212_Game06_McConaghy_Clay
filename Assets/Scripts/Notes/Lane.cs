@@ -24,10 +24,13 @@ namespace Plattko
 
         private float songTimer = 0f;
 
-        void Start()
+        private void Awake()
         {
             noteGenerator = GameObject.FindGameObjectWithTag("NoteGenerator").GetComponent<NoteGenerator>();
-            
+        }
+
+        void Start()
+        {
             // Set note width
             if (isBlackNote)
             {

@@ -65,6 +65,9 @@ namespace Plattko
 
         private bool canMantle;
 
+        private Transform ledge;
+        private Vector2 ledgeStartPosition;
+
         [Header("Damage Bounce Variables")]
         [SerializeField] private float damageBounceForce = 25f;
 
@@ -250,6 +253,8 @@ namespace Plattko
 
                 float ledgeSide;
                 float ledgeTop = wallCollider.bounds.max.y;
+                ledge = wallCollider.transform;
+                ledgeStartPosition = ledge.position;
 
                 if (ledgeCheck.localScale.x > 0)
                 {
@@ -272,14 +277,17 @@ namespace Plattko
 
             if (canMantle)
             {
-                transform.position = mantleStartPosition;
+                Vector2 offset = (Vector2)ledge.position - ledgeStartPosition;
+                transform.position = mantleStartPosition + offset;
+                //transform.position = mantleStartPosition;
             }
         }
 
         public void FinishMantle()
         {
             canMantle = false;
-            transform.position = mantleEndPosition;
+            Vector2 offset = (Vector2)ledge.position - ledgeStartPosition;
+            transform.position = mantleEndPosition + offset;
 
             // Restore player move
             canFlip = true;
