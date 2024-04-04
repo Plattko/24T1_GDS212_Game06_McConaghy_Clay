@@ -31,6 +31,11 @@ namespace Plattko
         [Header("Song Delay")]
         [SerializeField] private float songStartDelay;
 
+        [Header("Level Complete Star")]
+        [SerializeField] private GameObject starPrefab;
+        [SerializeField] private GameObject levelCompletePanel;
+        private bool hasStarSpawned;
+
         void Start()
         {
             audioSource = GetComponent<AudioSource>();
@@ -46,6 +51,18 @@ namespace Plattko
 
             songStartDelay = 27.63f / (float)noteFallSpeed;
             Invoke(nameof(StartSong), songStartDelay);
+        }
+
+        private void Update()
+        {
+            Debug.Log(GetAudioSourceTime());
+            
+            if (GetAudioSourceTime() > 99f && !hasStarSpawned)
+            {
+                hasStarSpawned = true;
+                LevelCompleteStar levelCompleteStar = Instantiate(starPrefab, new Vector2(0f, noteSpawnY), Quaternion.identity).GetComponent<LevelCompleteStar>();
+                levelCompleteStar.StarSetup((float)noteFallSpeed, levelCompletePanel);
+            }
         }
 
         private IEnumerator ReadFromWebsite()

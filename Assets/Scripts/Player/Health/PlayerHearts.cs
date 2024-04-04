@@ -7,11 +7,12 @@ namespace Plattko
 {
     public class PlayerHearts : MonoBehaviour
     {
-        [SerializeField] private SceneController sceneController;
+        [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private List<Image> heartIcons = new List<Image>();
         
         private int hearts = 3;
         private int currentHearts;
+        private bool hasPlayerDied;
 
         [Header("Heart Regeneration Time")]
         [SerializeField] private float heartRegenTime = 20f;
@@ -69,9 +70,9 @@ namespace Plattko
             Debug.Log("Heart lost.");
             Debug.Log("Current hearts: " + currentHearts);
 
-            if (currentHearts <= 0)
+            if (currentHearts <= 0 && !hasPlayerDied)
             {
-                sceneController.ReloadScene();
+                GameOver();
             }
         }
 
@@ -82,6 +83,13 @@ namespace Plattko
 
             Debug.Log("Heart regenerated.");
             Debug.Log("Current hearts: " + currentHearts);
+        }
+
+        private void GameOver()
+        {
+            hasPlayerDied = true;
+            Time.timeScale = 0f;
+            gameOverPanel.SetActive(true);
         }
     }
 }
