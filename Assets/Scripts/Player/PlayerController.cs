@@ -12,6 +12,7 @@ namespace Plattko
         private Transform groundCheck;
         private Transform ledgeCheck;
         private Animator animator;
+        private PlayerHearts playerHearts;
 
         // Collision check variables
         private int groundLayer = 6;
@@ -80,6 +81,7 @@ namespace Plattko
             groundCheck = transform.GetChild(1).gameObject.GetComponent<Transform>();
             ledgeCheck = transform.GetChild(2).gameObject.GetComponent<Transform>();
             animator = GetComponent<Animator>();
+            playerHearts = GetComponent<PlayerHearts>();
 
             groundLayerMask = 1 << groundLayer;
             wallLayerMask = 1 << wallLayer;
@@ -309,6 +311,7 @@ namespace Plattko
 
         private void DamageBounce()
         {
+            playerHearts.LoseHeart();
             float counterForce = rb.velocity.y;
             rb.AddForce(Vector2.up * (damageBounceForce + counterForce), ForceMode2D.Impulse);
             isInDamageBounce = true;
