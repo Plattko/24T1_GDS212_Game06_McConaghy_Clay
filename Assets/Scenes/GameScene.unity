@@ -4208,7 +4208,7 @@ GameObject:
   - component: {fileID: 845341278}
   - component: {fileID: 845341277}
   - component: {fileID: 845341279}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Border_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5544,7 +5544,7 @@ GameObject:
   - component: {fileID: 1130629266}
   - component: {fileID: 1130629265}
   - component: {fileID: 1130629267}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10733,7 +10733,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4, y: 1.3333334}
+  m_Size: {x: 4, y: 1.2}
   m_EdgeRadius: 0
 --- !u!1 &2029943226
 GameObject:
