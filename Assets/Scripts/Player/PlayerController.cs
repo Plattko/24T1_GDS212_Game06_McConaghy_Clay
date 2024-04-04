@@ -182,11 +182,15 @@ namespace Plattko
         {
             //wallCollider = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(1.0f, 0.4f), 0f, wallLayerMask); // Vector2 formerly 1.0f, 0.8f
             RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(ledgeCheck.localScale.x) * transform.right, 0.6f, wallLayerMask);
-            wallCollider = hit.collider;
 
-            if (wallCollider != null && !IsGrounded())
+            if (hit)
             {
-                return wallCollider;
+                wallCollider = hit.collider;
+            }
+
+            if (hit && !IsGrounded())
+            {
+                return hit;
             }
             return false;
         }
@@ -249,6 +253,13 @@ namespace Plattko
         {
             if (isLedgeDetected && canCheckLedge && !isInDamageBounce)
             {
+                Vector2 boxPos = new Vector2(transform.position.x + Mathf.Sign(ledgeCheck.localScale.x) * 1.08f, transform.position.y + 1.2f);
+                Vector2 boxSize = new Vector2(0.64f, 1.21f);
+                if (Physics2D.OverlapBox(boxPos, boxSize, 0f))
+                {
+                    return;
+                }
+                
                 canCheckLedge = false;
 
                 float ledgeSide;
@@ -381,6 +392,13 @@ namespace Plattko
 
                 rb.AddForce(Vector2.down * rb.velocity.y * 0.5f, ForceMode2D.Impulse);
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Vector2 boxPos = new Vector2(transform.position.x + Mathf.Sign(ledgeCheck.localScale.x) * 1.08f, transform.position.y + 1.2f);
+            Vector2 boxSize = new Vector2(0.64f, 1.21f);
+            Gizmos.DrawCube(boxPos, boxSize);
         }
     }
 }
