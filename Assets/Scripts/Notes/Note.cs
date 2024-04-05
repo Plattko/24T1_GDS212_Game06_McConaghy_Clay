@@ -25,8 +25,9 @@ namespace Plattko
             foreach (BoxCollider2D collider in sideColliders)
             {
                 collider.size = new Vector2(collider.size.x, collider.size.y - 0.1f);
+                collider.offset = new Vector2(collider.offset.x, collider.offset.y - 0.05f);
             }
-            bottomCollider.size = new Vector3(bottomCollider.size.x - 0.1f, bottomCollider.size.y);
+            bottomCollider.size = new Vector2(bottomCollider.size.x - 0.2f, bottomCollider.size.y);
 
             spriteRenderer.color = colour;
             //rb.velocity = new Vector2(0, -fallSpeed);
