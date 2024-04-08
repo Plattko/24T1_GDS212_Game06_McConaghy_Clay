@@ -89,6 +89,7 @@ namespace Plattko
         {
             hasPlayerDied = true;
             Time.timeScale = 0f;
+            GameObject.FindGameObjectWithTag("NoteGenerator").GetComponent<AudioSource>().Stop();
             gameOverPanel.SetActive(true);
         }
     }

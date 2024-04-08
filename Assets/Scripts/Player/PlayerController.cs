@@ -306,7 +306,7 @@ namespace Plattko
             canFlip = true;
             rb.velocity = Vector2.zero;
             rb.simulated = true;
-            Invoke("AllowLedgeCheck", 0.1f);
+            Invoke("AllowLedgeCheck", 0.2f);
         }
 
         private void DamageBounce()
